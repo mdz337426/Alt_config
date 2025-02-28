@@ -3,7 +3,7 @@ from io import BytesIO
 from dotenv import load_dotenv
 import os
 import requests
-import file_upload
+import time
 
 load_dotenv()
 api_key = os.getenv("api_key")
@@ -27,24 +27,31 @@ def get_response(image, prompt):
         ],
         "max_tokens": 300
     }
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    data = response.json()['choices']
-    content = data[0]['message']['content']
-    return content
 
+    retries = 0
+    max_retries = 5
+    wait_time=2
 
-def get_file_id(file_path):
-    server_response = file_upload.upload_file(api_key, file_path)
-    return server_response['id']
+    while retries < max_retries:
+        try:
+            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            data = response.json()
+            print(data)
+            content = data[0]['message']['content']
+            return content
+        except Exception as e:
+            print(f"Attempt {retries+1} failed: {e}")
+            retries+=1
+            time.sleep(wait_time)
+            wait_time+=1
+    return "failed to fetch response after multiple attempts"
 
 
 def get_response_with_file(sample_file, prompt):
-
     headers = {
     "Content-Type": "application/json",
     "Authorization": f"Bearer {api_key}" 
     }
-
     payload = {
         "model": "gpt-4o",
         "messages": 
@@ -68,11 +75,25 @@ def get_response_with_file(sample_file, prompt):
 
         "max_tokens": 300
     }
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    data = response.json()
-    print(data)
-    content = data[0]['message']['content']
-    return content
+
+    retries = 0
+    max_retries = 5
+    wait_time=2
+
+    while retries < max_retries:
+        try:
+            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            data = response.json()
+            print(data)
+            content = data[0]['message']['content']
+            return content
+        except Exception as e:
+            print(f"Attempt {retries+1} failed: {e}")
+            retries+=1
+            time.sleep(wait_time)
+            wait_time+=1
+    return "failed to fetch response after multiple attempts"
+
 
 
 
@@ -93,7 +114,20 @@ def generate_alt_text(examples, image_base64, prompt):
         "max_tokens": 200
     }
 
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    data = response.json()['choices']
-    content = data[0]['message']['content']
-    return content
+    retries = 0
+    max_retries = 5
+    wait_time=2
+
+    while retries < max_retries:
+        try:
+            response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+            data = response.json()
+            print(data)
+            content = data[0]['message']['content']
+            return content
+        except Exception as e:
+            print(f"Attempt {retries+1} failed: {e}")
+            retries+=1
+            time.sleep(wait_time)
+            wait_time+=1
+    return "failed to fetch response after multiple attempts"

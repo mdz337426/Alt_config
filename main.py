@@ -7,40 +7,13 @@ import base64
 import re
 import os
 import ext_examples
-
-prompt = """
-Write single alt text for each image for that caption only. Each alt text should include the necessary information given in the image.
-
-Start the alt text with the type of image. For example, an illustration, a diagram, a flowchart, a radiograph, etc. Write flowchart data in bullet points. 
-
-Do not include or rephrase caption in the alt text. Also, do not include the purpose or use of the image in the alt text.
-
-Spell out symbol and units.
-
-Use nurse instead of woman and use word 'patient' for the woman in hospital bed. Avoid mentioning gender of nurses.
-
-Use space between abbreviations. For example, DNA should be D N A.
-Spell out symbols and units.
-
-give the alt text of the given Fig. only which caption is...
-
-give response in plain text only ...
-Do not write anything except the response it should be raw text only.
-"""
-
-caption_prompt ="""
-if this page contains any figures or illustrations present and have caption below of format 'Fig\.\s*\d+\.\d+' 
+from dotenv import load_dotenv
 
 
-Extract the captions of each figure
-if there is more than one figures present with caption in the page make it double newline separated include 
-
-if page contain no figures simply give response -1, ignore the references
-
-give response in plain text only ...
-Do not write anything except the response it should be raw text only.
-"""
-
+load_dotenv()
+prompt = os.getenv("prompt")
+caption_prompt = os.getenv("caption_prompt")
+poppler_path = os.getenv("poppler_path")
 
 file_prompt = """
 This is file is for your training purpose.
@@ -55,7 +28,7 @@ def pdf_images_to_excel(pdf_path, excel_path, completed_pages, row_number, sampl
     sample = ext_examples.extract_alt_text_examples(sample_file,num_examples=5)
 
     # Convert PDF pages to images
-    images = convert_from_path(pdf_path)
+    images = convert_from_path(pdf_path, poppler_path=poppler_path)
     # Create a new Excel workbook and sheet
     if os.path.exists(excel_path):
         wb = load_workbook(excel_path)
