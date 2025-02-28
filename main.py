@@ -107,6 +107,7 @@ def pdf_images_to_excel(pdf_path, excel_path, completed_pages, row_number, sampl
         print(f"Excel saved at: {excel_path}")       
     except:
         wb.save(excel_path)
+        print(f"Some error occured")
         print(f"Excel saved at: {excel_path}")
 
 
